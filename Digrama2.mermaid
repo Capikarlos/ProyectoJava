@@ -1,0 +1,66 @@
+classDiagram
+  %% Paquete modelo
+  namespace modelo {
+    class Usuario {
+      - String id
+      - String nombre
+      - int edad
+      - String genero
+      - String ubicacion
+      - List<Hobby> hobbies
+      - List<Usuario> matches
+      + getAfinidad(Usuario otro): double
+    }
+    class Hobby {
+      - String nombre
+      + getNombre(): String
+    }
+  }
+
+  %% Paquete servicio
+  namespace servicio {
+    class MatcherService {
+      + List<Usuario> buscarMatches(Usuario u, List<Usuario> todos): List<Usuario>
+      + calcularCompatibilidad(Usuario a, Usuario b): double
+    }
+  }
+
+  %% Paquete persistencia
+  namespace persistencia {
+    class UsuarioDAO {
+      + void guardar(Usuario u)
+      + Usuario buscarPorId(String id)
+      + List<Usuario> listarTodos()
+    }
+    class DatabaseManager {
+      + Connection conectar(): Connection
+      + void desconectar(): void
+    }
+  }
+
+  %% Paquete vista
+  namespace vista {
+    class RegistroForm {
+      + mostrar(): void
+      - onSubmit(): void
+    }
+    class PerfilView {
+      + mostrarPerfil(Usuario u): void
+    }
+    class MatchView {
+      + mostrarTarjetas(List<Usuario> matches): void
+      - onLike(Usuario u): void
+      - onDislike(Usuario u): void
+    }
+  }
+
+  %% Relaciones
+  modelo.Usuario "1" -- "0..*" modelo.Hobby : tiene
+  modelo.Usuario "1" -- "0..*" modelo.Usuario : matches
+  servicio.MatcherService ..> modelo.Usuario : usa
+  servicio.MatcherService ..> List~Usuario~ : usa
+  persistencia.UsuarioDAO ..> persistencia.DatabaseManager : usa
+  vista.RegistroForm ..> persistencia.UsuarioDAO : usa
+  vista.PerfilView ..> modelo.Usuario : muestra
+  vista.MatchView ..> servicio.MatcherService : usa
+  vista.MatchView ..> modelo.Usuario : like/dislike

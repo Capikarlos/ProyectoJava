@@ -1,0 +1,67 @@
+classDiagram
+    %% Clases abstractas y base
+    class Persona {
+        <<abstract>>
+        -id: int
+        -nombre: String
+        -edad: int
+        -genero: String
+        -ubicacion: String
+        +getNombre(): String
+        +getEdad(): int
+        +getGenero(): String
+        +getUbicacion(): String
+    }
+
+    class Usuario {
+        -hobbies: List~String~
+        -foto: File
+        -matches: List~Match~
+        +darLike(usuario: Usuario): void
+        +verPerfil(): void
+        +calcularCompatibilidad(usuario: Usuario): double
+        +getHobbies(): List~String~
+    }
+
+    class Administrador {
+        -claveAdmin: String
+        +verUsuarios(): List~Usuario~
+        +eliminarUsuario(usuario: Usuario): void
+    }
+
+    class Match {
+        -usuario1: Usuario
+        -usuario2: Usuario
+        -puntuacion: double
+        +getUsuarios(): List~Usuario~
+        +getPuntuacion(): double
+    }
+
+    class BaseDatos {
+        +guardarUsuario(u: Usuario): void
+        +obtenerUsuarios(): List~Usuario~
+        +guardarMatch(m: Match): void
+    }
+
+    class MotorEmparejamiento {
+        +buscarMatches(usuario: Usuario): List~Usuario~
+        +calcularAfinidad(u1: Usuario, u2: Usuario): double
+    }
+
+    class InterfazGrafica {
+        +mostrarPantallaInicio(): void
+        +mostrarFormularioRegistro(): void
+        +mostrarPerfil(usuario: Usuario): void
+        +mostrarMatches(usuario: Usuario): void
+    }
+
+    %% Relaciones
+    Persona <|-- Usuario
+    Persona <|-- Administrador
+    Usuario "1" o-- "*" Match : tiene
+    Match "1" -- "1" Usuario : involucra
+    InterfazGrafica ..> Usuario : muestra
+    InterfazGrafica ..> MotorEmparejamiento : consulta
+    MotorEmparejamiento ..> BaseDatos : usa
+    Usuario ..> BaseDatos : guarda/consulta
+    Administrador ..> BaseDatos : administra
